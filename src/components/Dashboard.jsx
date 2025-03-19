@@ -30,10 +30,10 @@ export default function CreatorDashboard() {
     const items = await Promise.all(data.map(async i => {
       const tokenUri = await contract.tokenURI(i.tokenId);
       const meta = await axios.get(tokenUri);
-      let price = ethers.utils.formatUnits(i.price.toString(), 'ether');
+      let price = ethers.formatUnits(i.price.toString(), 'ether');
       let item = {
         price,
-        tokenId: i.tokenId.toNumber(),
+        tokenId: i.tokenId,
         seller: i.seller,
         owner: i.owner,
         image: meta.data.image,
@@ -55,7 +55,7 @@ export default function CreatorDashboard() {
           {
             nfts.map((nft, i) => (
               <div key={i} className="border shadow rounded-xl overflow-hidden">
-                <img src={nft.image} className="rounded" />
+                <img src={nft.image} className="rounded" alt="NFT" />
                 <div className="p-4 bg-black">
                   <p className="text-2xl font-bold text-white">Price - {nft.price} Eth</p>
                 </div>

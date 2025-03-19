@@ -1,38 +1,475 @@
-.App {
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
+@keyframes logo-spin {
   from {
     transform: rotate(0deg);
   }
   to {
     transform: rotate(360deg);
   }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+/* App.css */
+
+/* Đặt lại kiểu chữ cơ bản và padding cho body */
+body {
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f9;  /* Nền sáng nhẹ */
+  color: #333;
+  box-sizing: border-box;
+}
+
+/* Container chính của ứng dụng */
+.App {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Chiếm toàn bộ chiều cao màn hình */
+  width: 100vw; /* Chiếm toàn bộ chiều rộng màn hình */
+}
+
+/* Phong cách cho thanh điều hướng */
+nav {
+  background-color: #0d253f; /* Màu nền tối cho thanh điều hướng */
+  color: #fff;
+  padding: 20px 30px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);  /* Bóng đổ nhẹ */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%; /* Full chiều rộng */
+}
+
+nav p {
+  font-size: 36px;
+  font-weight: 700;
+  margin: 0;
+  color: #f1c40f;  /* Màu vàng nổi bật */
+}
+
+nav .flex {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  width: 100%;
+}
+
+nav .flex a {
+  color: #d6336c;
+  text-decoration: none;
+  font-size: 18px;
+  margin-right: 30px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  position: relative;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+nav .flex a:hover {
+  color: #f1c40f; /* Chuyển sang vàng khi hover */
+  transform: translateY(-5px); /* Hiệu ứng nâng lên khi hover */
+  background-color: #f3f4f6;
+}
+
+/* Phong cách cho các trang */
+.page-content {
+  flex-grow: 1; /* Chiếm hết không gian còn lại */
+  margin-top: 40px;
+  padding: 50px;
+  background-color: #fff;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1); /* Bóng đổ đậm cho nội dung */
+  border-radius: 15px;
+  max-width: 100%; /* Full chiều rộng */
+  width: 100%; /* Full chiều rộng */
+  margin-left: auto;
+  margin-right: auto;
+  overflow-x: hidden; /* Đảm bảo không có cuộn ngang */
+}
+
+/* Các button */
+button {
+  background-color: #0d253f; /* Màu tối cho nút */
+  border: none;
+  color: white;
+  padding: 12px 25px;
+  cursor: pointer;
+  border-radius: 30px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  margin-top: 20px;
+}
+
+button:hover {
+  background-color: #f1c40f; /* Nền vàng khi hover */
+  transform: scale(1.05); /* Phóng to một chút khi hover */
+  color: #0d253f;
+}
+
+/* Layout các mục, giới hạn độ rộng */
+section {
+  margin: 30px 0;
+}
+
+h1 {
+  font-size: 36px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+p {
+  font-size: 18px;
+  line-height: 1.6;
+  color: #555;
+}
+
+/* Phong cách cho các card thông tin trong các trang (ví dụ: CreateNFT, MyNFTs, etc.) */
+.card {
+  background-color: #fff;
+  padding: 30px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 15px;
+  margin-bottom: 30px;
+  transition: box-shadow 0.3s ease;
+  width: 100%; /* Đảm bảo card chiếm toàn bộ chiều rộng */
+}
+
+.card:hover {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15); /* Bóng đổ đậm hơn khi hover */
+}
+
+.card h3 {
+  font-size: 28px;
+  color: #0d253f;
+  margin-bottom: 20px;
+}
+
+.card p {
+  font-size: 18px;
+  color: #777;
+}
+
+.card button {
+  background-color: #f1c40f;
+  border-radius: 8px;
+  padding: 10px 15px;
+  transition: background-color 0.3s ease;
+}
+
+.card button:hover {
+  background-color: #f39c12;
+}
+
+/* Custom Styling for the form */
+.flex {
+  display: flex;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.wi-12 {
+  width: 50%;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.pb-12 {
+  padding-bottom: 3rem;
+}
+
+.mt-8 {
+  margin-top: 2rem;
+}
+
+.mt-2 {
+  margin-top: 0.5rem;
+}
+
+.my-4 {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.border {
+  border: 1px solid #e5e7eb;
+}
+
+.rounded {
+  border-radius: 0.375rem;
+}
+
+.p-4 {
+  padding: 1rem;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.bg-pink-500 {
+  background-color: #ec4899;
+}
+
+.text-white {
+  color: white;
+}
+
+.shadow-lg {
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+.rounded {
+  border-radius: 0.375rem;
+}
+
+.mt-4 {
+  margin-top: 1rem;
+}
+
+img.rounded {
+  border-radius: 0.375rem;
+}
+
+.w-full {
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .wi-12 {
+    width: 90%;
+  }
+  .p-4 {
+    padding: 0.75rem;
+  }
+}
+/* App.css */
+
+
+
+
+
+
+/* Global styles */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f5f5f5;
+  margin: 0;
+  padding: 0;
+}
+
+h1 {
+  font-size: 2.5rem;
+  text-align: center;
+  margin-top: 50px;
+  color: #333;
+}
+
+/* Container for the NFT grid */
+.flex {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+.px-4 {
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+/* Ensure max-width for the grid container */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 items per row */
+  gap: 20px;
+  max-width: 1200px; /* Maximum width for the grid */
+  margin: 0 auto; /* Center the grid */
+}
+
+.pt-4 {
+  padding-top: 20px;
+}
+
+/* Styling for each NFT card */
+.border {
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  background-color: white;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+.border:hover {
+  transform: translateY(-5px);
+}
+
+img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.p-4 {
+  padding: 16px;
+}
+
+.text-2xl {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.text-gray-400 {
+  color: #888;
+}
+
+.bg-black {
+  background-color: #111;
+  color: white;
+}
+
+/* Description styling */
+.text-gray-400 {
+  color: #888;
+  font-size: 1rem;
+}
+
+.bg-black {
+  background-color: #000;
+  color: white;
+}
+
+.text-2xl.font-bold {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.mt-4 {
+  margin-top: 16px;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.bg-pink-500 {
+  background-color: #d23669;
+}
+
+.text-white {
+  color: white;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.py-2 {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.px-12 {
+  padding-left: 48px;
+  padding-right: 48px;
+}
+
+.rounded {
+  border-radius: 8px;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #b31c4f;
+}
+
+/* Small screen adjustments */
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(4, 1fr); /* Ensure 4 items per row */
+  }
+}
+
+@media (max-width: 400px) {
+  .text-2xl {
+    font-size: 1.25rem;
+  }
+
+  .p-4 {
+    padding: 12px;
+  }
+
+  .text-2xl.font-bold {
+    font-size: 1.25rem;
+  }
+
+  .px-12 {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+}
+
+/* Add custom styles for links */
+a {
+  text-decoration: none;
+}
+
+a:hover {
+  color: #d6336c;
+}
+
+/* Custom styling for the navigation bar */
+nav {
+  background-color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+nav .text-4xl {
+  font-size: 2.5rem;
+  color: #1c1c1c;
 }

@@ -31,10 +31,10 @@ export default function Home() {
     const items = await Promise.all(data.map(async i => {
       const tokenUri = await contract.tokenURI(i.tokenId);
       const meta = await axios.get(tokenUri);
-      let price = ethers.utils.formatUnits(i.price.toString(), 'ether');
+      let price = ethers.formatUnits(i.price.toString(), 'ether');
       let item = {
         price,
-        tokenId: i.tokenId.toNumber(),
+        tokenId: i.tokenId,
         seller: i.seller,
         owner: i.owner,
         image: meta.data.image,
@@ -56,7 +56,7 @@ export default function Home() {
     const contract = new ethers.Contract(marketplaceAddress, NFTMarketplace.abi, signer);
 
     /* user will be prompted to pay the asking price to complete the transaction */
-    const price = ethers.utils.parseUnits(nft.price.toString(), 'ether');   
+    const price = ethers.parseUnits(nft.price.toString(), 'ether');   
     const transaction = await contract.createMarketSale(nft.tokenId, {
       value: price
     });
@@ -73,7 +73,7 @@ export default function Home() {
           {
             nfts.map((nft, i) => (
               <div key={i} className="border shadow rounded-xl overflow-hidden">
-                <img src={nft.image} />
+                <img src={nft.image} alt="NFT" />
                 <div className="p-4">
                   <p style={{ height: '64px' }} className="text-2xl font-semibold">{nft.name}</p>
                   <div style={{ height: '70px', overflow: 'hidden' }}>

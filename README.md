@@ -12,6 +12,10 @@ ganache-cli -h 0.0.0.0 -d -i 5777 --db ./ganache_data
 npx hardhat run --network ganache scripts/deploy.js
 
 #4. Init The Graphql
+// Change header in file ./graph-node/docker/data/ipfs/config
+// "Access-Control-Allow-Origin": ["*"],
+// "Access-Control-Allow-Methods": ["PUT", "POST", "GET"],
+// "Access-Control-Allow-Headers": ["Authorization", "Content-Type"]
 graph codegen && graph build
 graph create --node http://localhost:8020/ nhnam112/nft-marketplace
 graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001/

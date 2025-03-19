@@ -45,3 +45,6 @@ ignition/deployments/chain-31337
 
 # Contract address file
 /src/config.js
+
+#The Graphql
+/the-graphql

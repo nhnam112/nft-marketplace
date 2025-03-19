@@ -5,17 +5,17 @@ import { create } from 'ipfs-http-client';
 import { useNavigate } from 'react-router-dom';
 import { createSigner } from '../services/provider';
 
-const client = create({
-    host: "127.0.0.1",
-    port: 5001,
-    protocol: "http",
-});
-
 import {
   marketplaceAddress
 } from '../config';
 
 import NFTMarketplace from '../abis/NFTMarketplace.json';
+
+const client = create({
+    host: "127.0.0.1",
+    port: 5001,
+    protocol: "http",
+});
 
 export default function CreateItem() {
   const [fileUrl, setFileUrl] = useState(null);
@@ -48,7 +48,7 @@ export default function CreateItem() {
     });
     try {
       const added = await client.add(data);
-      const url = `https://ipfs.infura.io/ipfs/${added.path}`;
+      const url = `http://127.0.0.1:8080/ipfs/${added.path}`;
       /* after metadata is uploaded to IPFS, return the URL to use it in the transaction */
       return url;
     } catch (error) {
@@ -64,7 +64,7 @@ export default function CreateItem() {
     }
 
     /* create the NFT */
-    const price = ethers.utils.parseUnits(formInput.price, 'ether');
+    const price = ethers.parseUnits(formInput.price, 'ether');
     let contract = new ethers.Contract(marketplaceAddress, NFTMarketplace.abi, signer);
     let listingPrice = await contract.getListingPrice();
     listingPrice = listingPrice.toString();
@@ -100,7 +100,7 @@ export default function CreateItem() {
         />
         {
           fileUrl && (
-            <img className="rounded mt-4" width="350" src={fileUrl} />
+            <img className="rounded mt-4" width="350" src={fileUrl} alt="NFT" />
           )
         }
         <button onClick={listNFTForSale} className="font-bold mt-4 bg-pink-500 text-white rounded p-4 shadow-lg">

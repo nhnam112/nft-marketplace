@@ -36,7 +36,7 @@ export default function ResellNFT() {
       return;
     }
 
-    const priceFormatted = ethers.utils.parseUnits(formInput.price, 'ether');
+    const priceFormatted = ethers.parseUnits(formInput.price, 'ether');
     let contract = new ethers.Contract(marketplaceAddress, NFTMarketplace.abi, signer);
     let listingPrice = await contract.getListingPrice();
 
