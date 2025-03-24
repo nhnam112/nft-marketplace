@@ -15,7 +15,7 @@ export const createProvider = async () => {
   await window.ethereum.request({ method: 'eth_requestAccounts' });
 
   // Create a provider using the MetaMask provider (window.ethereum)
-  const provider = new ethers.BrowserProvider(window.ethereum); // Corrected this line
+  const provider = new ethers.BrowserProvider(window.ethereum);
 
   return provider;
 };

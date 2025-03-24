@@ -31,6 +31,14 @@ contract NFTMarketplace is ERC721URIStorage {
       bool sold
     );
 
+    event MarketItemUpdated (
+      uint256 indexed tokenId,
+      address seller,
+      address owner,
+      uint256 price,
+      bool sold
+    );
+
     constructor() ERC721("Metaverse Tokens", "METT") {
       owner = payable(msg.sender);
     }
@@ -66,19 +74,18 @@ contract NFTMarketplace is ERC721URIStorage {
 
       idToMarketItem[tokenId] =  MarketItem(
         tokenId,
+        payable(address(0)),
         payable(msg.sender),
-        payable(address(this)),
         price,
-        false
+        true
       );
 
-      _transfer(msg.sender, address(this), tokenId);
       emit MarketItemCreated(
         tokenId,
+        address(0),
         msg.sender,
-        address(this),
         price,
-        false
+        true
       );
     }
 
@@ -93,6 +100,14 @@ contract NFTMarketplace is ERC721URIStorage {
       _itemsSold--;
 
       _transfer(msg.sender, address(this), tokenId);
+
+      emit MarketItemUpdated(
+        tokenId,
+        msg.sender,
+        address(this),
+        price,
+        false
+      );
     }
 
     /* Creates the sale of a marketplace item */
@@ -110,6 +125,14 @@ contract NFTMarketplace is ERC721URIStorage {
       _transfer(address(this), msg.sender, tokenId);
       payable(owner).transfer(listingPrice);
       payable(seller).transfer(msg.value);
+
+      emit MarketItemUpdated(
+        tokenId,
+        address(0),
+        msg.sender,
+        price,
+        true
+      );
     }
 
     /* Returns all unsold market items */

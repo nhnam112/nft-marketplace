@@ -4,12 +4,25 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { createSigner } from '../services/provider';
+import { gql } from '@apollo/client';
+import client from '../services/apolloClient';
 
-import {
-  marketplaceAddress
-} from '../config';
-
-import NFTMarketplace from '../abis/NFTMarketplace.json';
+// GraphQL query to get NFTs owned by a specific address
+const GET_NFTS_BY_OWNER = gql`
+  query($owner: Bytes!) {
+    marketItems(where: { owner: $owner }) {
+      id
+      tokenId
+      seller
+      owner
+      price
+      sold
+      blockNumber
+      blockTimestamp
+      transactionHash
+    }
+  }
+`;
 
 export default function MyAssets() {
   const [nfts, setNfts] = useState([]);
@@ -26,26 +39,38 @@ export default function MyAssets() {
       return;
     }
 
-    const marketplaceContract = new ethers.Contract(marketplaceAddress, NFTMarketplace.abi, signer);
-    const data = await marketplaceContract.fetchMyNFTs();
+    const ownerAddress = await signer.getAddress();
 
-    const items = await Promise.all(data.map(async i => {
-      const tokenURI = await marketplaceContract.tokenURI(i.tokenId);
-      const meta = await axios.get(tokenURI);
-      let price = ethers.formatUnits(i.price.toString(), 'ether');
-      let item = {
-        price,
-        tokenId: i.tokenId,
-        seller: i.seller,
-        owner: i.owner,
-        image: meta.data.image,
-        tokenURI
-      };
-      return item;
-    }));
-    
-    setNfts(items);
-    setLoadingState('loaded'); 
+    // Make a GraphQL query to fetch NFTs owned by the current address
+    try {
+      const { data } = await client.query({
+        query: GET_NFTS_BY_OWNER,
+        variables: { owner: ownerAddress.toLowerCase() }, // Ensure the address is in lowercase format
+      });
+
+      // Map over the data to retrieve metadata and format the items
+      const items = await Promise.all(data.marketItems.map(async (item) => {
+        // Fetch token URI metadata
+        const tokenURI = await marketplaceContract.tokenURI(item.tokenId);
+        const meta = await axios.get(tokenURI);
+        let price = ethers.formatUnits(item.price.toString(), 'ether');
+        
+        return {
+          price,
+          tokenId: item.tokenId,
+          seller: item.seller,
+          owner: item.owner,
+          image: meta.data.image,
+          tokenURI
+        };
+      }));
+
+      setNfts(items);
+      setLoadingState('loaded');
+    } catch (error) {
+      console.error("Error fetching NFTs:", error);
+      setLoadingState('error');
+    }
   }
   
   function listNFT(nft) {

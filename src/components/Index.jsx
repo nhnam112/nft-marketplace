@@ -1,8 +1,10 @@
 /* pages/index.js */
 import { ethers } from 'ethers';
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import { createSigner } from '../services/provider';
+import { gql } from '@apollo/client';
+import { useQuery } from '@apollo/client';
+import client from '../services/apolloClient';
 
 import {
   marketplaceAddress
@@ -10,41 +12,58 @@ import {
 
 import NFTMarketplace from '../abis/NFTMarketplace.json';
 
+// GraphQL query to get unsold market items
+const GET_UNSOLD_NFTS = gql`
+  query {
+    marketItems(where: { sold: false }) {
+      id
+      tokenId
+      seller
+      owner
+      price
+      sold
+      blockNumber
+      blockTimestamp
+      transactionHash
+    }
+  }
+`;
+
 export default function Home() {
   const [nfts, setNfts] = useState([]);
   const [loadingState, setLoadingState] = useState('not-loaded');
+
+  // Use Apollo Client to fetch market items
+  const { data, loading, error } = useQuery(GET_UNSOLD_NFTS, {
+    client,
+  });
   
   useEffect(() => {
-    loadNFTs();
-  }, []);
+    if (data) {
+      loadNFTs(data.marketItems);
+    }
+  }, [data]);
 
-  async function loadNFTs() {
-    /* create a generic provider and query for unsold market items */
-    const provider = new ethers.JsonRpcProvider("http://127.0.0.1:8545");
-    const contract = new ethers.Contract(marketplaceAddress, NFTMarketplace.abi, provider);
-    const data = await contract.fetchMarketItems();
+  async function loadNFTs(marketItems) {
+    const items = await Promise.all(
+      marketItems.map(async (item) => {
+        const tokenURI = await fetchTokenURI(item.tokenId);
+        const meta = await fetchMetadata(tokenURI);
+        let price = ethers.formatUnits(item.price.toString(), 'ether');
+        return {
+          price,
+          tokenId: item.tokenId,
+          seller: item.seller,
+          owner: item.owner,
+          image: meta.image,
+          name: meta.name,
+          description: meta.description,
+        };
+      })
+    );
 
-    /*
-    *  map over items returned from smart contract and format 
-    *  them as well as fetch their token metadata
-    */
-    const items = await Promise.all(data.map(async i => {
-      const tokenUri = await contract.tokenURI(i.tokenId);
-      const meta = await axios.get(tokenUri);
-      let price = ethers.formatUnits(i.price.toString(), 'ether');
-      let item = {
-        price,
-        tokenId: i.tokenId,
-        seller: i.seller,
-        owner: i.owner,
-        image: meta.data.image,
-        name: meta.data.name,
-        description: meta.data.description,
-      };
-      return item;
-    }));
     setNfts(items);
-    setLoadingState('loaded'); 
+    setLoadingState('loaded');
   }
 
   async function buyNft(nft) {

@@ -1,14 +1,26 @@
 /* pages/dashboard.js */
 import { ethers } from 'ethers';
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import { createSigner } from '../services/provider';
+import { gql } from '@apollo/client';
+import client from '../services/apolloClient';
 
-import {
-  marketplaceAddress
-} from '../config';
-
-import NFTMarketplace from '../abis/NFTMarketplace.json';
+// GraphQL query to get market items listed by the current seller
+const GET_LISTED_NFTS = gql`
+  query($seller: Bytes!) {
+    marketItems(where: { sold: false, seller: $seller }) {
+      id
+      tokenId
+      seller
+      owner
+      price
+      sold
+      blockNumber
+      blockTimestamp
+      transactionHash
+    }
+  }
+`;
 
 export default function CreatorDashboard() {
   const [nfts, setNfts] = useState([]);
@@ -24,25 +36,43 @@ export default function CreatorDashboard() {
       return;
     }
 
-    const contract = new ethers.Contract(marketplaceAddress, NFTMarketplace.abi, signer);
-    const data = await contract.fetchItemsListed();
+    const ownerAddress = await signer.getAddress();
 
-    const items = await Promise.all(data.map(async i => {
-      const tokenUri = await contract.tokenURI(i.tokenId);
-      const meta = await axios.get(tokenUri);
-      let price = ethers.formatUnits(i.price.toString(), 'ether');
-      let item = {
-        price,
-        tokenId: i.tokenId,
-        seller: i.seller,
-        owner: i.owner,
-        image: meta.data.image,
-      };
-      return item;
-    }));
+    // Query the subgraph for NFTs listed by the current user
+    const { data, loading, error } = await client.query({
+      query: GET_LISTED_NFTS,
+      variables: { seller: ownerAddress.toLowerCase() }, // Convert to lowercase if needed
+    });
+
+    if (loading) {
+      setLoadingState('loading');
+      return;
+    }
+
+    if (error) {
+      console.error("Error fetching NFTs:", error);
+      setLoadingState('error');
+      return;
+    }
+
+    // Fetch metadata for each listed NFT
+    const items = await Promise.all(
+      data.marketItems.map(async (item) => {
+        const tokenURI = await fetchTokenURI(item.tokenId);
+        const meta = await fetchMetadata(tokenURI);
+        let price = ethers.formatUnits(item.price.toString(), 'ether');
+        return {
+          price,
+          tokenId: item.tokenId,
+          seller: item.seller,
+          owner: item.owner,
+          image: meta.image,
+        };
+      })
+    );
 
     setNfts(items);
-    setLoadingState('loaded'); 
+    setLoadingState('loaded');
   }
   
   if (loadingState === 'loaded' && !nfts.length) return (<h1 className="py-10 px-20 text-3xl">No NFTs listed</h1>);

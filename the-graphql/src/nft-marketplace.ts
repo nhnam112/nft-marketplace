@@ -3,6 +3,7 @@ import {
   ApprovalForAll as ApprovalForAllEvent,
   BatchMetadataUpdate as BatchMetadataUpdateEvent,
   MarketItemCreated as MarketItemCreatedEvent,
+  MarketItemUpdated as MarketItemUpdatedEvent,
   MetadataUpdate as MetadataUpdateEvent,
   Transfer as TransferEvent
 } from "../generated/NFTMarketplace/NFTMarketplace"
@@ -10,7 +11,7 @@ import {
   Approval,
   ApprovalForAll,
   BatchMetadataUpdate,
-  MarketItemCreated,
+  MarketItem,
   MetadataUpdate,
   Transfer
 } from "../generated/schema"
@@ -62,10 +63,32 @@ export function handleBatchMetadataUpdate(
 }
 
 export function handleMarketItemCreated(event: MarketItemCreatedEvent): void {
-  let entity = new MarketItemCreated(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
+  let entity = new MarketItem(
+    event.transaction.hash.concatI32(event.params.tokenId.toI32())
   )
   entity.tokenId = event.params.tokenId
+  entity.seller = event.params.seller
+  entity.owner = event.params.owner
+  entity.price = event.params.price
+  entity.sold = event.params.sold
+
+  entity.blockNumber = event.block.number
+  entity.blockTimestamp = event.block.timestamp
+  entity.transactionHash = event.transaction.hash
+
+  entity.save()
+}
+
+export function handleMarketItemUpdated(event: MarketItemUpdatedEvent): void {
+  let entityId = event.transaction.hash.concatI32(event.params.tokenId.toI32());
+  // Try to load the existing entity using the tokenId
+  let entity = MarketItem.load(entityId);
+
+  // If the entity doesn't exist, create a new one
+  if (!entity) {
+    entity = new MarketItem(entityId);
+  }
+
   entity.seller = event.params.seller
   entity.owner = event.params.owner
   entity.price = event.params.price
