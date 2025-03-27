@@ -30,6 +30,7 @@ type BatchMetadataUpdate @entity(immutable: true) {
 type MarketItem @entity(immutable: true) {
   id: Bytes!
   tokenId: BigInt! @index # uint256
+  tokenURI: String!
   seller: Bytes! # address
   owner: Bytes! # address
   price: BigInt! # uint256

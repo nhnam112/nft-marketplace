@@ -12,7 +12,17 @@ export const createProvider = async () => {
   }
 
   // Request account access if not granted
-  await window.ethereum.request({ method: 'eth_requestAccounts' });
+  try {
+    await window.ethereum.request({ method: 'eth_requestAccounts' });
+  } catch (error) {
+    // If the user cancels the MetaMask popup or denies access
+    if (error.code === 4001) {
+      throw new Error('User denied account access or closed the MetaMask popup.');
+    } else {
+      // Handle other types of errors (network issues, etc.)
+      throw new Error('Failed to request accounts: ' + error.message);
+    }
+  }
 
   // Create a provider using the MetaMask provider (window.ethereum)
   const provider = new ethers.BrowserProvider(window.ethereum);

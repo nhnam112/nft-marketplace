@@ -28,7 +28,8 @@ contract NFTMarketplace is ERC721URIStorage {
       address seller,
       address owner,
       uint256 price,
-      bool sold
+      bool sold,
+      string tokenURI
     );
 
     event MarketItemUpdated (
@@ -61,13 +62,14 @@ contract NFTMarketplace is ERC721URIStorage {
 
       _mint(msg.sender, newTokenId);
       _setTokenURI(newTokenId, tokenURI);
-      createMarketItem(newTokenId, price);
+      createMarketItem(newTokenId, price, tokenURI);
       return newTokenId;
     }
 
     function createMarketItem(
       uint256 tokenId,
-      uint256 price
+      uint256 price,
+      string memory tokenURI
     ) private {
       require(price > 0, "Price must be at least 1 wei");
       require(msg.value == listingPrice, "Price must be equal to listing price");
@@ -85,7 +87,8 @@ contract NFTMarketplace is ERC721URIStorage {
         address(0),
         msg.sender,
         price,
-        true
+        true,
+        tokenURI
       );
     }
 

@@ -71,6 +71,7 @@ export function handleMarketItemCreated(event: MarketItemCreatedEvent): void {
   entity.owner = event.params.owner
   entity.price = event.params.price
   entity.sold = event.params.sold
+  entity.tokenURI = event.params.tokenURI
 
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp

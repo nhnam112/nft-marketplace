@@ -13,6 +13,7 @@ const GET_NFTS_BY_OWNER = gql`
     marketItems(where: { owner: $owner }) {
       id
       tokenId
+      tokenURI
       seller
       owner
       price
@@ -51,7 +52,7 @@ export default function MyAssets() {
       // Map over the data to retrieve metadata and format the items
       const items = await Promise.all(data.marketItems.map(async (item) => {
         // Fetch token URI metadata
-        const tokenURI = await marketplaceContract.tokenURI(item.tokenId);
+        const tokenURI = item.tokenURI;
         const meta = await axios.get(tokenURI);
         let price = ethers.formatUnits(item.price.toString(), 'ether');
         

@@ -5,6 +5,7 @@ import Home from './components/Index';
 import CreateNFT from './components/CreateNFT';
 import MyNFTs from './components/MyNFTs';
 import Dashboard from './components/Dashboard';
+import WalletConnect from "./components/ConnectWallet";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Link to="/my-nfts" className="mr-6 text-pink-500">My NFTs</Link>
         <Link to="/dashboard" className="mr-6 text-pink-500">Dashboard</Link>
       </div>
+      <WalletConnect />
     </nav>
     <Routes>
       <Route path="/" element={<Home />} />

@@ -5,6 +5,7 @@ import { createSigner } from '../services/provider';
 import { gql } from '@apollo/client';
 import { useQuery } from '@apollo/client';
 import client from '../services/apolloClient';
+import axios from 'axios';
 
 import {
   marketplaceAddress
@@ -18,6 +19,7 @@ const GET_UNSOLD_NFTS = gql`
     marketItems(where: { sold: false }) {
       id
       tokenId
+      tokenURI
       seller
       owner
       price
@@ -39,16 +41,26 @@ export default function Home() {
   });
   
   useEffect(() => {
+    if (loading) {
+      setLoadingState('loading');
+      return;
+    }
+
+    if (error) {
+      console.error("Error fetching NFTs:", error);
+      setLoadingState('error');
+      return;
+    }
     if (data) {
       loadNFTs(data.marketItems);
     }
-  }, [data]);
+  }, [data,loading,error]);
 
   async function loadNFTs(marketItems) {
     const items = await Promise.all(
       marketItems.map(async (item) => {
-        const tokenURI = await fetchTokenURI(item.tokenId);
-        const meta = await fetchMetadata(tokenURI);
+        const tokenURI = item.tokenURI;
+        const meta = await axios.get(tokenURI);
         let price = ethers.formatUnits(item.price.toString(), 'ether');
         return {
           price,
